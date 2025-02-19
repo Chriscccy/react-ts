@@ -7,7 +7,6 @@ import { errNotify, okNotify } from "@/utils";
 
 interface AuthState {
   token: string | null;
-  //   setToken: (token: string) => void;
   clearToken: () => void;
   fetchLogin: (values: FieldType) => Promise<boolean>; // 返回布尔值表示登录是否成功
 }
@@ -20,9 +19,6 @@ interface FieldType {
 
 const useAuthStore = create<AuthState>((set) => ({
   token: getToken() || null,
-  //   setToken: (token: string) => {
-  //     set({ token });
-  //   },
   clearToken: () => {
     set({ token: null });
     removeToken();

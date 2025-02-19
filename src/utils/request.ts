@@ -1,7 +1,5 @@
-// axios封装处理
 import axios from "axios";
-import { errNotify } from "@/utils/notification"; // 确保路径正确
-import useAuthStore from "@/stores/authStore"; // 确保路径正确
+import { getToken, errNotify } from "@/utils"; // 确保路径正确
 import { API_BASE_URL } from "@/apis/apiConfig"; // 导入配置
 
 const request = axios.create({
@@ -12,8 +10,7 @@ const request = axios.create({
 // 请求拦截器
 request.interceptors.request.use(
   (config) => {
-    // const token = useAuthStore.getState().token; // 在store获取 token
-    const token = config.headers.Authorization; // 在header中获取 token
+    const token = getToken(); // 从 localStorage 中获取 token
     if (token) {
       config.headers.Authorization = `${token}`; // 确保 token 被正确设置
     }
