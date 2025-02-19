@@ -2,8 +2,8 @@ import "./index.scss";
 import { Card, Form, Input, Button, Checkbox, Flex } from "antd";
 import logo from "@/assets/images/react.svg";
 import useAuthStore from "@/stores/authStore"; // 确保路径正确
-// import useUserStore from "@/stores/userStore"; // 确保路径正确
 import { errNotify } from "@/utils/notification";
+import { useNavigate } from "react-router-dom";
 
 type FieldType = {
   username?: string;
@@ -12,16 +12,16 @@ type FieldType = {
 };
 
 const Login: React.FC = () => {
-  const login = useAuthStore((state) => state.login);
-  // const fetchUserInfo = useUserStore((state) => state.fetchUserInfo);
-
+  const fetchLogin = useAuthStore((state) => state.fetchLogin);
+  const navigate = useNavigate();
   const onFinish = async (values: FieldType) => {
     try {
-      await login(values);
-      // await fetchUserInfo();
+      const success = await fetchLogin(values);
+      if (success) {
+        navigate("/"); // 仅在登录成功时执行跳转
+      }
     } catch (error: any) {
-      errNotify("Login failed !", error);
-      throw error;
+      errNotify("Login failed!", error);
     }
   };
 
@@ -38,7 +38,6 @@ const Login: React.FC = () => {
                 required: true,
                 message: "Please input your username!",
               },
-              // { pattern: /^1[3-9]\d{5}$/, message: "请输入正确的手机号" },
             ]}
           >
             <Input size="large" type="text" placeholder="username" />

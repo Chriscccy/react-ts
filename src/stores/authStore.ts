@@ -1,14 +1,15 @@
 import { create } from "zustand";
-import { request } from "@/utils/request"; // 使用配置好的 axios 实例
+import { removeToken, request } from "@/utils"; // 使用配置好的 axios 实例
+import { setToken as _setToken, getToken } from "@/utils";
 import { API_PATHS } from "@/apis/apiConfig"; // 导入配置
 
-import { errNotify, okNotify } from "@/utils/notification";
+import { errNotify, okNotify } from "@/utils";
 
 interface AuthState {
   token: string | null;
-  setToken: (token: string) => void;
+  //   setToken: (token: string) => void;
   clearToken: () => void;
-  login: (values: FieldType) => Promise<void>;
+  fetchLogin: (values: FieldType) => Promise<boolean>; // 返回布尔值表示登录是否成功
 }
 
 interface FieldType {
@@ -18,26 +19,34 @@ interface FieldType {
 }
 
 const useAuthStore = create<AuthState>((set) => ({
-  token: null,
-  setToken: (token: string) => set({ token }),
-  clearToken: () => set({ token: null }),
-  login: async (values: FieldType) => {
+  token: getToken() || null,
+  //   setToken: (token: string) => {
+  //     set({ token });
+  //   },
+  clearToken: () => {
+    set({ token: null });
+    removeToken();
+  },
+  fetchLogin: async (values: FieldType) => {
     try {
       const res = await request.post(API_PATHS.LOGIN, values);
       const authHeader = res.headers["authorization"];
       const status = res.data.status;
       if (status !== 0) {
-        return errNotify("登录失败", "登录失败，请检查用户名和密码");
+        errNotify("登录失败", "登录失败，请检查用户名和密码");
+        return false; // 返回 false 表示登录失败
       }
       const token = authHeader;
-      set({ token });
+      set({ token }); // 更新 Zustand 状态
+      _setToken(token);
+
       okNotify("登录成功", "您已成功登录！");
+      return true; // 返回 true 表示登录成功
     } catch (error: any) {
-      //   console.error("登录失败:", error); // 输出完整的错误对象
       const errorMessage =
         error.response?.data?.message || error.message || "登录时发生错误。";
       errNotify("登录失败", errorMessage);
-      throw error;
+      return false; // 返回 false 表示登录失败
     }
   },
 }));
