@@ -1,7 +1,9 @@
 import "./index.scss";
 import { Card, Form, Input, Button, Checkbox, Flex } from "antd";
 import logo from "@/assets/images/react.svg";
-import { request } from "@/utils";
+import useAuthStore from "@/stores/authStore"; // 确保路径正确
+// import useUserStore from "@/stores/userStore"; // 确保路径正确
+import { errNotify } from "@/utils/notification";
 
 type FieldType = {
   username?: string;
@@ -10,9 +12,17 @@ type FieldType = {
 };
 
 const Login: React.FC = () => {
-  const onFinish = (values: FieldType) => {
-    // 执行相应操作
-    console.log(values);
+  const login = useAuthStore((state) => state.login);
+  // const fetchUserInfo = useUserStore((state) => state.fetchUserInfo);
+
+  const onFinish = async (values: FieldType) => {
+    try {
+      await login(values);
+      // await fetchUserInfo();
+    } catch (error: any) {
+      errNotify("Login failed !", error);
+      throw error;
+    }
   };
 
   return (

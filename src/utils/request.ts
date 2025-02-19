@@ -1,28 +1,22 @@
 // axios封装处理
-
 import axios from "axios";
-import { notification } from "antd";
+import { errNotify } from "@/utils/notification"; // 确保路径正确
+import useAuthStore from "@/stores/authStore"; // 确保路径正确
+import { API_BASE_URL } from "@/apis/apiConfig"; // 导入配置
 
 const request = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: API_BASE_URL,
   timeout: 5000,
 });
 
-// 初始化 notification API
-const [api] = notification.useNotification();
-
-// 用于显示错误通知的函数
-const openErrorNotification = (message: string, description: string) => {
-  api.error({
-    message,
-    description,
-  });
-};
-
 // 请求拦截器
-// 发请求之前，先处理发送的参数
 request.interceptors.request.use(
   (config) => {
+    // const token = useAuthStore.getState().token; // 在store获取 token
+    const token = config.headers.Authorization; // 在header中获取 token
+    if (token) {
+      config.headers.Authorization = `${token}`; // 确保 token 被正确设置
+    }
     return config;
   },
   (error) => {
@@ -32,13 +26,12 @@ request.interceptors.request.use(
 
 // 响应拦截器
 request.interceptors.response.use(
-  (res) => {
-    // 返回 status 为 200 的数据
-    return res.data;
+  (response) => {
+    return response;
   },
   (error) => {
     // 返回 status 为 非 200 的数据，显示错误通知
-    openErrorNotification(
+    errNotify(
       "Request Error",
       error.message || "An error occurred during the request."
     );
