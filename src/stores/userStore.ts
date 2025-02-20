@@ -49,7 +49,11 @@ const useUserStore = create<UserState>((set, get) => ({
       // 获取用户信息并更新 store
       const data = res.data.data;
       set({
-        userInfo: { username: data.username, age: data.age, email: data.email },
+        userInfo: {
+          username: data.username,
+          age: data.age,
+          email: data.email,
+        },
       }); // 根据实际用户信息字段更新
     } catch (error: any) {
       const errorMessage =
