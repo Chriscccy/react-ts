@@ -1,6 +1,7 @@
+import React from "react";
 import { Menu, Drawer } from "antd";
 import { getMenuItems } from "./MenuList"; // 导入菜单项配置
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const MenuComponent: React.FC<{
   isMobile: boolean;
@@ -9,14 +10,12 @@ const MenuComponent: React.FC<{
 }> = ({ isMobile, drawerVisible, toggleDrawer }) => {
   const menuItems = getMenuItems(); // 获取动态生成的菜单项
 
-  // const role = useUserStore.getState().userInfo.role;
   const navigate = useNavigate();
   const onMenuClick = (route: any) => {
     const path = route.key;
-    // console.log(role);
-
     navigate(path);
   };
+  const location: any = useLocation().pathname;
 
   if (isMobile) {
     return (
@@ -25,13 +24,13 @@ const MenuComponent: React.FC<{
         placement="left"
         closable={false}
         onClose={toggleDrawer}
-        visible={drawerVisible}
-        bodyStyle={{ padding: 0 }}
+        open={drawerVisible} // 使用 `open` 替代 `visible`
+        styles={{ body: { padding: 0 } }} // 使用 `styles.body` 替代 `bodyStyle`
       >
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={["1"]}
+          selectedKeys={[location]}
           items={menuItems}
           onClick={toggleDrawer}
         />
@@ -42,7 +41,7 @@ const MenuComponent: React.FC<{
       <Menu
         theme="dark"
         mode="inline"
-        defaultSelectedKeys={["1"]}
+        selectedKeys={[location]}
         items={menuItems}
         onClick={onMenuClick}
       />

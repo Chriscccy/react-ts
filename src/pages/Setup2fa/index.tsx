@@ -1,10 +1,9 @@
-import "./index.scss";
-import { Card, Form, Input, Button, Checkbox, Flex } from "antd";
+import { Card, Form, Input, Button, Flex } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import logo from "@/assets/images/react.svg";
+
 import useAuthStore from "@/stores/authStore"; // 确保路径正确
 import { errNotify } from "@/utils/notification";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 type FieldType = {
   username?: string;
@@ -12,27 +11,9 @@ type FieldType = {
   remember?: string;
 };
 
-const Login: React.FC = () => {
-  const fetchLogin = useAuthStore.getState().fetchLogin;
-  const { token, verify_device, d2fa } = useAuthStore(
-    (state) => state.authState
-  );
+const Setup2fa: React.FC = () => {
+  const fetchLogin = useAuthStore((state) => state.fetchLogin);
   const navigate = useNavigate();
-
-  if (token) {
-    if (!d2fa) {
-      if (!verify_device) {
-        return <Navigate to="/" replace />;
-      }
-    }
-    if (d2fa) {
-      return <Navigate to="/" />;
-    }
-  }
-
-  const regHandle = () => {
-    navigate("/register");
-  };
 
   const onFinish = async (values: FieldType) => {
     try {
@@ -85,29 +66,15 @@ const Login: React.FC = () => {
             />
           </Form.Item>
 
-          {/* <Form.Item<FieldType>
-            name="remember"
-            valuePropName="checked"
-            label={null}
-          >
-            <Checkbox>Remember me</Checkbox>
-          </Form.Item> */}
-
           <Form.Item label={null}>
             <Button size="large" type="primary" htmlType="submit" block>
               Submit
             </Button>
           </Form.Item>
-
-          <Flex align="center" justify="center">
-            <Button type="link" onClick={regHandle}>
-              Register
-            </Button>
-          </Flex>
         </Form>
       </Card>
     </Flex>
   );
 };
 
-export default Login;
+export default Setup2fa;

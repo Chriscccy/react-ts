@@ -33,13 +33,7 @@ const userMenuItems = [
 ];
 
 export const getMenuItems = () => {
-  const role = useAuthStore.getState().role; // 获取用户角色
+  const role = useAuthStore((state) => state.authState.role);
 
-  if (role === "" || role === "user") {
-    return userMenuItems;
-  } else if (role === "admin") {
-    return adminMenuItems;
-  } else {
-    return userMenuItems;
-  }
+  return role === "admin" ? adminMenuItems : userMenuItems;
 };

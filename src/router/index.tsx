@@ -1,54 +1,76 @@
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+} from "react-router-dom";
+import useAuthStore from "@/stores/authStore";
 import Layout from "@/pages/Layout";
 import Login from "@/pages/Login";
-import { createBrowserRouter } from "react-router-dom";
-import { AuthRoute } from "@/components/AuthRoute";
 import Home from "@/pages/Layout/Home";
 import Article from "@/pages/Layout/Article";
 import Publish from "@/pages/Layout/Publish";
 import Err404 from "@/pages/404";
+import Err403 from "@/pages/403";
+import Setting from "@/pages/Layout/Setting";
+import Profile from "@/pages/Layout/Profile";
+import Register from "@/pages/Register";
+import Verify2faDevice from "@/pages/Verify2faDevice";
+import Setup2fa from "@/pages/Setup2fa";
+import AuthRoute from "@/components/AuthRoute";
 
-import useAuthStore from "@/stores/authStore";
+const AppRouter: React.FC = () => {
+  const role = useAuthStore((state) => state.authState.role);
 
-const role = useAuthStore.getState().role;
+  const adminRoutes = [
+    { index: true, element: <Home /> },
+    { path: "/home", element: <Navigate to="/" replace /> },
+    { path: "/article", element: <Article /> },
+    { path: "/publish", element: <Publish /> },
+    { path: "/setting", element: <Setting /> },
+    { path: "/profile", element: <Profile /> },
+  ];
 
-const adminRoutes = [
-  { index: true, element: <Home /> },
-  { path: "/home", element: <Home /> },
-  { path: "/article", element: <Article /> },
-  { path: "/publish", element: <Publish /> },
-];
+  const userRoutes = [
+    { index: true, element: <Home /> },
+    { path: "/home", element: <Navigate to="/" replace /> },
+    { path: "/article", element: <Article /> },
+    { path: "/setting", element: <Setting /> },
+    { path: "/profile", element: <Profile /> },
+  ];
 
-const userRoutes = [
-  { index: true, element: <Home /> },
-  { path: "/home", element: <Home /> },
-  { path: "/article", element: <Article /> },
-];
+  const nullRoutes = [{ path: "*", element: <Err404 /> }];
 
-let routes;
-if (role === "admin") {
-  routes = adminRoutes;
-} else {
-  routes = userRoutes;
-}
+  const routes =
+    role === "admin" ? adminRoutes : role === "user" ? userRoutes : nullRoutes;
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: (
-      <AuthRoute>
-        <Layout />
-      </AuthRoute>
-    ),
-    children: routes,
-  },
-  {
-    path: "/login",
-    element: <Login />,
-  },
-  {
-    path: "*", // 捕获所有未匹配的路径并跳转到404页面
-    element: <Err404 />,
-  },
-]);
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: (
+        <AuthRoute>
+          <Layout />
+        </AuthRoute>
+      ),
+      children: routes,
+    },
+    {
+      path: "/login",
+      element: <Login />,
+    },
+    { path: "/register", element: <Register /> },
+    { path: "/auth/setup2fa", element: <Setup2fa /> },
+    { path: "/auth/verifydevice", element: <Verify2faDevice /> },
+    {
+      path: "*",
+      element: <Err404 />,
+    },
+    {
+      path: "/403",
+      element: <Err403 />,
+    },
+  ]);
 
-export default router;
+  return <RouterProvider router={router} />;
+};
+
+export default AppRouter;

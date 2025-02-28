@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Button, Layout as LayoutA, theme } from "antd";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import "./index.scss";
 import MenuComponent from "@/components/Menu"; // 导入动态菜单组件
 import { Outlet } from "react-router-dom";
+import ProfileSetting from "@/components/ProfileSetting";
 
 const { Header, Sider, Content } = LayoutA;
 
@@ -69,6 +70,9 @@ const Layout: React.FC = () => {
               }}
             />
           )}
+          <div className="Header-Setting">
+            <ProfileSetting />
+          </div>
         </Header>
         <Outlet />
         <Content

@@ -14,4 +14,9 @@ function removeToken() {
   localStorage.removeItem(TOKENKEY);
 }
 
-export { setToken, getToken, removeToken };
+function removeTokenRole() {
+  localStorage.removeItem(TOKENKEY);
+  localStorage.removeItem("user_role");
+}
+
+export { setToken, getToken, removeToken, removeTokenRole };

@@ -9,6 +9,9 @@ const API_PATHS = {
 
   // /my
   GET_USER_INFO: "/my/getuserinfo",
+
+  // /auth
+  VERIFYDEVICE: "/auth/verify_device",
 };
 
 export { API_BASE_URL, API_PATHS };

@@ -1,0 +1,17 @@
+.verifydevice {
+  width: 100%;
+  height: 100vh;
+
+  background: center/cover url("../../assets/images/login-bg2.png");
+
+  .card-container {
+    width: 90%;
+    max-width: 400px;
+    margin: 20px;
+
+    .ant-otp {
+      display: flex;
+      column-gap: 4px;
+    }
+  }
+}
