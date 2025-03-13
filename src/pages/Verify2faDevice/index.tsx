@@ -11,21 +11,21 @@ interface FieldType {
 
 const Verify2faDevice: React.FC = () => {
   const fetchVerifyDevice = useAuthStore((state) => state.fetchVerifyDevice);
-  const token = useAuthStore().token;
+  const { token, d2fa, verify_device } = useAuthStore(
+    (state) => state.authState
+  );
   const navigate = useNavigate();
-  const d2fa = useAuthStore().d2fa;
-  const verifyDevice = useAuthStore().verifyDevice;
 
   if (!token || token === "" || token === undefined) {
     return <Navigate to="/login" replace />;
-  }
-  if (token && d2fa === "false") {
+  } else if (d2fa && verify_device) {
     return <Navigate to="/" replace />;
   }
 
-  if (token && d2fa === "true" && verifyDevice === "true") {
-    return <Navigate to="/" replace />;
-  }
+  const backLogin = () => {
+    useAuthStore.getState().clearAllState();
+    navigate("/login");
+  };
 
   const onFinish = async (values: FieldType) => {
     try {
@@ -58,6 +58,12 @@ const Verify2faDevice: React.FC = () => {
             </Button>
           </Form.Item>
         </Form>
+
+        <Flex align="center" justify="center">
+          <Button type="link" onClick={backLogin}>
+            Back to Login
+          </Button>
+        </Flex>
       </Card>
     </Flex>
   );

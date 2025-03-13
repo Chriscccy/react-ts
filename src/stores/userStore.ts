@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { errNotify } from "@/utils/notification";
-import { getUserInfoAPI } from "@/apis/user";
+import { getUserInfoAPI } from "@/apis/userInfo";
+import { getCarouselImagesAPI } from "@/apis/userInfo";
 
 interface UserInfo {
   username: string | null;
@@ -10,10 +11,14 @@ interface UserInfo {
 
 interface UserState {
   userInfo: UserInfo;
+  carouselImagesList: string[];
+  loading: boolean;
   setUserInfo: (userInfo: UserInfo) => void;
   fetchUserInfo: () => Promise<void>;
-  loading: boolean;
   setLoading: (loading: boolean) => void;
+
+  fetchCarouselImages: () => Promise<void>;
+
   clearState: () => void; // 添加 clearState 方法
 }
 
@@ -25,6 +30,7 @@ const initialUserInfo: UserInfo = {
 
 const useUserStore = create<UserState>((set, get) => ({
   userInfo: initialUserInfo,
+  carouselImagesList: [],
   loading: false,
   setUserInfo: (userInfo: UserInfo) => set({ userInfo }),
   setLoading: (loading: boolean) => set({ loading }),
@@ -61,10 +67,35 @@ const useUserStore = create<UserState>((set, get) => ({
       setLoading(false); // 请求结束后设置 loading 为 false
     }
   },
+
+  fetchCarouselImages: async () => {
+    try {
+      const res = await getCarouselImagesAPI();
+      const status = res.data.status;
+
+      // 如果接口返回的状态码不是 0，表示失败
+      if (status !== 0) {
+        errNotify("获取轮播图失败", "获取轮播图列表失败");
+        return;
+      }
+
+      // 更新状态中的 carouselImagesList
+      set({ carouselImagesList: res.data.data });
+    } catch (error: any) {
+      // 捕获异常并提示错误
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "获取轮播图列表时发生错误。";
+      errNotify("获取轮播图失败", errorMessage);
+    }
+  },
+
   clearState: () => {
     // set({ userInfo: initialUserInfo, loading: false }); // 清除用户状态
     const state = useUserStore.getState();
     state.userInfo = initialUserInfo;
+    state.carouselImagesList = [];
     state.loading = false;
   },
 }));

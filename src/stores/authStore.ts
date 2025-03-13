@@ -1,9 +1,9 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { encrypt, decrypt } from "@/utils/crypto"; // 导入加密工具函数
-
 import { errNotify, okNotify } from "@/utils";
-import { loginAPI, verifyDeviceAPI } from "@/apis/user"; // 确保从 user API 导入 verifyDeviceAPI
+import { loginAPI, updatePasswordAPI } from "@/apis/user"; // 确保从 user API 导入 verifyDeviceAPI
+import { verifyDeviceAPI } from "@/apis/userAuth";
 import useUserStore from "@/stores/userStore"; // 导入 userStore
 
 interface InitialAuth {
@@ -18,6 +18,8 @@ interface AuthState {
   clearAllState: () => void;
   fetchLogin: (values: FieldType) => Promise<boolean>;
   fetchVerifyDevice: (values: VerifyType) => Promise<boolean>;
+  fetchUpdatePsw: (values: UpdatePswType) => Promise<boolean>;
+  setAuthState: (newState: InitialAuth) => void; // 新增方法
 }
 
 interface FieldType {
@@ -28,6 +30,12 @@ interface FieldType {
 
 interface VerifyType {
   token_2fa?: string;
+}
+
+interface UpdatePswType {
+  oldPwd?: string;
+  newPwd?: string;
+  repNewPwd?: string;
 }
 
 const initialAuthState: InitialAuth = {
@@ -112,6 +120,37 @@ const useAuthStore = create<AuthState>()(
           return false;
         }
       },
+
+      fetchUpdatePsw: async (values: UpdatePswType) => {
+        try {
+          const res = await updatePasswordAPI(values);
+          const { status } = res.data;
+
+          if (status !== 0) {
+            errNotify("密码更新失败", "密码更新失败，请检查密码");
+            return false;
+          }
+          okNotify("密码更新成功", "您已成功更换新密码！");
+          return true;
+        } catch (error: any) {
+          const errorMessage =
+            error.response?.data?.message ||
+            error.message ||
+            "更新密码时发生错误。";
+          errNotify("密码更新失败", errorMessage);
+          return false;
+        }
+      },
+
+      // 新增方法：更新 authState
+      setAuthState: (newState: InitialAuth) => {
+        set((state) => ({
+          authState: {
+            ...state.authState,
+            ...newState,
+          },
+        }));
+      },
     }),
     {
       name: "auth-storage", // 存储键名
@@ -142,6 +181,8 @@ const useAuthStore = create<AuthState>()(
         clearAllState: () => {}, // 占位函数
         fetchLogin: async () => false, // 占位函数
         fetchVerifyDevice: async () => false, // 占位函数
+        fetchUpdatePsw: async () => false,
+        setAuthState: async () => false,
       }), // 返回完整的 AuthState 对象
     }
   )

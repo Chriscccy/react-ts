@@ -20,14 +20,14 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
 
   if (token) {
-    if (!d2fa) {
-      if (!verify_device) {
-        return <Navigate to="/" replace />;
-      }
-    }
     if (d2fa) {
-      return <Navigate to="/" />;
+      return verify_device ? (
+        <Navigate to="/" replace />
+      ) : (
+        <Navigate to="/auth/verifydevice" replace />
+      );
     }
+    return <Navigate to="/" replace />;
   }
 
   const regHandle = () => {
@@ -38,7 +38,11 @@ const Login: React.FC = () => {
     try {
       const success = await fetchLogin(values);
       if (success) {
-        navigate("/"); // 仅在登录成功时执行跳转
+        if (d2fa) {
+          navigate("/auth/verifydevice");
+          return;
+        }
+        if (!d2fa) navigate("/");
       }
     } catch (error: any) {
       errNotify("Login failed!", error);
@@ -84,14 +88,6 @@ const Login: React.FC = () => {
               placeholder="Password"
             />
           </Form.Item>
-
-          {/* <Form.Item<FieldType>
-            name="remember"
-            valuePropName="checked"
-            label={null}
-          >
-            <Checkbox>Remember me</Checkbox>
-          </Form.Item> */}
 
           <Form.Item label={null}>
             <Button size="large" type="primary" htmlType="submit" block>

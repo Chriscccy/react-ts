@@ -30,7 +30,7 @@ request.interceptors.response.use(
   (response) => {
     const dataStatus = response.data.status;
 
-    if (dataStatus === 1) {
+    if (dataStatus === 444) {
       useAuthStore.getState().clearAllState();
     }
 

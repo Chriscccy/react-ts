@@ -1,4 +1,5 @@
 .Layout {
+  min-height: 100vh;
   height: 100vh;
 }
 
@@ -6,4 +7,31 @@
   position: absolute;
   top: 0;
   right: 16px;
+}
+
+.Layout-Content {
+  height: 100%;
+  justify-content: space-between;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+/* 自定义滚动条宽度 */
+.Layout-Content::-webkit-scrollbar {
+  width: 2px;
+}
+
+/* 滚动条轨道 */
+.Layout-Content::-webkit-scrollbar-track {
+  background: none; /* 滚动条轨道背景色 */
+}
+
+/* 滚动条滑块 */
+.Layout-Content::-webkit-scrollbar-thumb {
+  background: grey; /* 滚动条滑块颜色 */
+  border-radius: 10px; /* 滚动条滑块圆角 */
+}
+
+.ant-card {
+  border: 1px solid #d9d9d9;
 }

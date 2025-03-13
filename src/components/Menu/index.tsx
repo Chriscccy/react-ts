@@ -1,50 +1,76 @@
 import React from "react";
 import { Menu, Drawer } from "antd";
-import { getMenuItems } from "./MenuList"; // 导入菜单项配置
 import { useLocation, useNavigate } from "react-router-dom";
+import useAuthStore from "@/stores/authStore";
+import { getAllMenuItems } from "@/router/menuList";
+import "./index.scss";
+import logo from "@/assets/images/DeepSeek_logo.svg";
+import logoIcon from "@/assets/images/DeepSeek_icon.svg";
 
 const MenuComponent: React.FC<{
   isMobile: boolean;
   drawerVisible: boolean;
   toggleDrawer: () => void;
 }> = ({ isMobile, drawerVisible, toggleDrawer }) => {
-  const menuItems = getMenuItems(); // 获取动态生成的菜单项
+  const role = useAuthStore((state) => state.authState.role) as
+    | "admin"
+    | "user"
+    | null;
 
+  const menuItems = getAllMenuItems(role);
   const navigate = useNavigate();
+  const location = useLocation();
+  const pathname = location.pathname;
+
   const onMenuClick = (route: any) => {
     const path = route.key;
     navigate(path);
+    if (isMobile) {
+      toggleDrawer();
+    }
   };
-  const location: any = useLocation().pathname;
+
+  // 获取当前路径的父级路径来设置默认展开的菜单项
+  const defaultOpenKeys = [pathname.split("/").slice(0, 2).join("/")];
 
   if (isMobile) {
     return (
       <Drawer
-        title="Menu"
         placement="left"
         closable={false}
         onClose={toggleDrawer}
-        open={drawerVisible} // 使用 `open` 替代 `visible`
-        styles={{ body: { padding: 0 } }} // 使用 `styles.body` 替代 `bodyStyle`
+        open={drawerVisible}
+        width={250}
+        styles={{ body: { padding: 0, backgroundColor: "#001529" } }}
       >
+        <div className="Menu-Logo-Box">
+          <img src={logo} alt="Logo" className="Menu-Logo" />
+        </div>
         <Menu
           theme="dark"
           mode="inline"
-          selectedKeys={[location]}
+          selectedKeys={[pathname]}
+          defaultOpenKeys={defaultOpenKeys}
           items={menuItems}
-          onClick={toggleDrawer}
+          onClick={onMenuClick}
         />
       </Drawer>
     );
   } else {
     return (
-      <Menu
-        theme="dark"
-        mode="inline"
-        selectedKeys={[location]}
-        items={menuItems}
-        onClick={onMenuClick}
-      />
+      <>
+        <div className="Menu-Logo-Box">
+          <img src={logo} alt="Logo" className="Menu-Logo" />
+        </div>
+        <Menu
+          theme="dark"
+          mode="inline"
+          selectedKeys={[pathname]}
+          defaultOpenKeys={defaultOpenKeys}
+          items={menuItems}
+          onClick={onMenuClick}
+        />
+      </>
     );
   }
 };

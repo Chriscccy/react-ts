@@ -1,0 +1,21 @@
+.Menu-Logo-Box {
+  //   background-color: red;
+  min-height: 64px;
+  max-height: 64px;
+  display: flex;
+  align-items: center;
+
+  .Menu-Logo {
+    // background-color: green;
+
+    margin: 10px;
+    max-height: 44px;
+    height: 100%;
+    width: 100%;
+  }
+}
+
+.ant-drawer .ant-drawer-content-wrapper {
+  // background-color: blue;
+  // width: 250px !important;
+}

@@ -43,12 +43,6 @@ const ProfileSetting: React.FC = () => {
 
   const items: MenuProps["items"] = [
     {
-      key: "/profile",
-      icon: <UserOutlined />,
-      label: "Profile",
-      onClick: onSettingClick,
-    },
-    {
       key: "/setting",
       icon: <SettingOutlined />,
       label: "Setting",

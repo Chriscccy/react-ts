@@ -1,13 +1,15 @@
-import { useState } from "react";
-import { useMediaQuery } from "react-responsive";
-import { Button, Layout as LayoutA, theme } from "antd";
-import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import "./index.scss";
+import { useState } from "react";
+import { Outlet, Link, useLocation } from "react-router-dom";
+import { useMediaQuery } from "react-responsive";
+import { Button, Layout as LayoutA, theme, Breadcrumb, Flex } from "antd";
+import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import MenuComponent from "@/components/Menu"; // 导入动态菜单组件
-import { Outlet } from "react-router-dom";
 import ProfileSetting from "@/components/ProfileSetting";
 
-const { Header, Sider, Content } = LayoutA;
+import { allMenuItems, settingMenuItems } from "@/router/menuList";
+
+const { Header, Sider, Content, Footer } = LayoutA;
 
 const Layout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -23,7 +25,7 @@ const Layout: React.FC = () => {
   };
 
   return (
-    <LayoutA className="Layout" style={{ height: "100vh" }}>
+    <LayoutA className="Layout">
       {isMobile ? (
         <>
           <MenuComponent
@@ -48,7 +50,6 @@ const Layout: React.FC = () => {
         </>
       ) : (
         <Sider trigger={null} collapsible collapsed={collapsed}>
-          <div className="demo-logo-vertical" />
           <MenuComponent
             isMobile={isMobile}
             drawerVisible={drawerVisible}
@@ -57,7 +58,20 @@ const Layout: React.FC = () => {
         </Sider>
       )}
       <LayoutA>
-        <Header style={{ padding: 0, background: colorBgContainer }}>
+        <Header
+          style={{
+            padding: 0,
+            background: colorBgContainer,
+            position: "sticky",
+            top: 0,
+            zIndex: 1,
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            boxShadow: "0px 5px 15px -10px rgb(0 0 0 / 50%)",
+          }}
+        >
           {!isMobile && (
             <Button
               type="text"
@@ -74,16 +88,30 @@ const Layout: React.FC = () => {
             <ProfileSetting />
           </div>
         </Header>
-        <Outlet />
-        <Content
-          style={{
-            margin: "24px 16px",
-            padding: 24,
-            minHeight: 280,
-            background: colorBgContainer,
-            borderRadius: borderRadiusLG,
-          }}
-        ></Content>
+
+        <Content>
+          <Flex className="Layout-Content" vertical>
+            <div style={{ padding: "0 24px" }}>
+              {/* <Breadcrumb
+                style={{ margin: "16px 0" }}
+                items={generateBreadcrumbs()}
+              /> */}
+              <div style={{ margin: "24px 0" }} />
+              <div>
+                <Outlet />
+              </div>
+            </div>
+            <Footer
+              style={{
+                textAlign: "center",
+                // backgroundColor: "red",
+                // marginTop: "16px",
+              }}
+            >
+              Ant Design ©{new Date().getFullYear()} Created by Ant UED
+            </Footer>
+          </Flex>
+        </Content>
       </LayoutA>
     </LayoutA>
   );
