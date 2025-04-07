@@ -53,7 +53,7 @@ const Login: React.FC = () => {
     <Flex className="login" align="center" justify="center">
       <Card className="login-container">
         {/* <img className="login-logo" src={logo} alt="logo" /> */}
-        <h2 style={{ textAlign: "center" }}>Login</h2>
+        <h2 style={{ textAlign: "center" }}>Login 测试</h2>
         <Form onFinish={onFinish} validateTrigger="onBlur">
           <Form.Item<FieldType>
             name="username"
